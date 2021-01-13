@@ -69,13 +69,24 @@ class Task(Resource): # task resource
         return result
 
 
-    #@marshal_with(resource_fields)
-    #def delete(self, task_id):
-    #    args = task_update_args.parse_args()
-    #   result = TaskModel.query.filter_by(id=task_id).first()
-    #    return "", 204
-    
+    @marshal_with(resource_fields)
+    def delete(self, task_id):
+        result = TaskModel.query.filter_by(id=task_id).first()
+        if not result:
+            abort(404, message="there is no task with that id")
+        
+        db.session.delete(result)
+        db.session.commit()
+
+        return "", 204
+
+class TaskAmount(Resource):
+    def get(self):
+        rows = TaskModel.query.count()
+        return rows
+
 api.add_resource(Task, "/task/<int:task_id>") 
+api.add_resource(TaskAmount, "/")
 
 if __name__ == "__main__":
     app.run(debug=True)
