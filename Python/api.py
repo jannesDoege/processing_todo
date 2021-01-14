@@ -80,15 +80,13 @@ class Task(Resource): # task resource
 
         return "", 204
 
-class TaskAmount(Resource):
+class TaskAmount(Resource): # info about the total amount of tasks in the database
     def get(self):
         rows = TaskModel.query.count()
         return rows
 
-api.add_resource(Task, "/task/<int:task_id>") 
+api.add_resource(Task, "/task/<int:task_id>") # add resource to the api
 api.add_resource(TaskAmount, "/")
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     app.run(debug=True)
-    result = TaskModel.query.filter_by(id=0).first()
-    print(result)
