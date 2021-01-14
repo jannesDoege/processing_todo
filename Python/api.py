@@ -60,7 +60,7 @@ class Task(Resource): # task resource
         if not result:
             abort(404, message="unused id, cannot update")
         
-        for arg in args: # the user doens't has to specifie every argument, if they only want to change one value
+        for arg in args: # the user doesn't has to specifie every argument, if they only want to change one value
             if args.get(arg) is not None:
                 setattr(result, arg, args.get(arg))
 
