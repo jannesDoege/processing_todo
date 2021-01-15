@@ -22,7 +22,7 @@ public class Main extends PApplet {
     @Override
     public void draw(){
         background(60);
-        input.s_draw(50, 40, inputFont, 200) ;
+        input.s_draw(50, 40, inputFont, 200, 40) ;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class Main extends PApplet {
 
     @Override
     public void keyPressed() {
-        System.out.print(key);
+        //System.out.print(input.text);
         input.s_type();
     }
 
@@ -55,17 +55,19 @@ public class Main extends PApplet {
         float r_width;
 
 
-        public void s_draw(int xPos, int yPos, PFont f, int rect_width) {
+        public void s_draw(int xPos, int yPos, PFont f, int rect_width, int bg_color) {
             int f_size = f.getSize();
             r_width = rect_width;
             textFont(f);
 
+            fill(bg_color);
+            rect(xPos - textMargin, yPos - (int)f_size/1f, r_width, f_size + 10, 5);
+            fill(fillColor);
+
             t_width = textWidth(text);
             text(text, xPos, yPos);
 
-            noFill();
-            rect(xPos - textMargin, yPos - (int)f_size/1f, r_width, f_size + 10, 5);
-            fill(fillColor);
+
         }
 
         private boolean validKeyPress(char k){
@@ -76,6 +78,7 @@ public class Main extends PApplet {
             if (active){
                 if (key == '\n'){
                     this.typed = this.text;
+                    System.out.println(this.typed);
                 }else if(key == BACKSPACE){
                     this.text = remove_last_char(this.text);
                 }else if (validKeyPress(key) || keyCode == 32){
