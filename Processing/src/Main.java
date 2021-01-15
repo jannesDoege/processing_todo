@@ -49,6 +49,8 @@ public class Main extends PApplet {
         public String text = "";
         public String typed = "";
 
+        public int textMargin = 4;
+
         float t_width = 0;
         float r_width;
 
@@ -62,12 +64,12 @@ public class Main extends PApplet {
             text(text, xPos, yPos);
 
             noFill();
-            rect(xPos -4, yPos - (int)f_size/1f, r_width, f_size + 10, 5);
+            rect(xPos - textMargin, yPos - (int)f_size/1f, r_width, f_size + 10, 5);
             fill(fillColor);
         }
 
         private boolean validKeyPress(char k){
-            return Character.toString(k).matches("[A-z?]") && t_width < r_width - textWidth("W");
+            return Character.toString(k).matches("[A-z?]") && t_width < r_width - textWidth(k) - textMargin;
         }
 
         public void s_type(){
