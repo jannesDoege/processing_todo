@@ -1,4 +1,3 @@
-import org.w3c.dom.ranges.Range;
 import processing.core.PApplet;
 import processing.core.PFont;
 
@@ -8,7 +7,7 @@ public class Main extends PApplet {
         PApplet.main("Main", args);
     }
 
-    Textfeld input = new Textfeld();
+    Textinput input = new Textinput();
     PFont inputFont;
 
     int fillColor = 200;
@@ -44,18 +43,18 @@ public class Main extends PApplet {
         return "";
     }
 
-    public class Textfeld{
+    public class Textinput{
         public boolean active = true;
 
         public String text = "";
         public String typed = "";
 
         public void s_draw(int xPos, int yPos, PFont f, int rect_width) {
-            int f_size = inputFont.getSize();
+            int f_size = f.getSize();
             noFill();
             rect(xPos -4, yPos - (int)f_size/1f, rect_width, f_size + 10, 5);
             fill(fillColor);
-            textFont(inputFont);
+            textFont(f);
             text(text, xPos, yPos);
         }
 
