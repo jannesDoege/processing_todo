@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PFont;
 
 public class Main extends PApplet {
     public static void main(String[] args){
@@ -6,17 +7,21 @@ public class Main extends PApplet {
         PApplet.main("Main", args);
     }
 
-    Textfeld text = new Textfeld();
+    Textfeld input = new Textfeld();
+    PFont inputFont;
 
     @Override
     public void setup(){
         background(60);
+        inputFont = createFont("Arial", 24);
     }
+
+
 
     @Override
     public void draw(){
         background(60);
-        text.s_draw(20, 20);
+        input.s_draw(20, 20, inputFont) ;
     }
 
     @Override
@@ -27,7 +32,7 @@ public class Main extends PApplet {
     @Override
     public void keyPressed() {
         System.out.print(key);
-        text.s_type();
+        input.s_type();
     }
 
     public static String remove_last_char(String str){
@@ -43,8 +48,13 @@ public class Main extends PApplet {
         public String text = "";
         public String typed = "";
 
-        public void s_draw(int xPos, int yPos) {
+        public void s_draw(int xPos, int yPos, PFont f) {
+            textFont(inputFont);
             text(text, xPos, yPos);
+        }
+
+        private boolean validKeyPress(char k){
+            return Character.toString(k).matches("[A-z?]");
         }
 
         public void s_type(){
@@ -54,7 +64,7 @@ public class Main extends PApplet {
                     this.text = this.text + key;
                 }else if(key == BACKSPACE){
                     this.text = remove_last_char(this.text);
-                }else if (true){ //TODO filter out Shift, Space, ...
+                }else if (validKeyPress(key) || keyCode == 32){
                     this.text = this.text + key;
                 }
             }
