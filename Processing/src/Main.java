@@ -1,3 +1,4 @@
+import org.w3c.dom.ranges.Range;
 import processing.core.PApplet;
 import processing.core.PFont;
 
@@ -10,18 +11,19 @@ public class Main extends PApplet {
     Textfeld input = new Textfeld();
     PFont inputFont;
 
+    int fillColor = 200;
+
     @Override
     public void setup(){
         background(60);
         inputFont = createFont("Arial", 24);
+        fill(fillColor);
     }
-
-
 
     @Override
     public void draw(){
         background(60);
-        input.s_draw(20, 20, inputFont) ;
+        input.s_draw(50, 40, inputFont, 40) ;
     }
 
     @Override
@@ -48,7 +50,11 @@ public class Main extends PApplet {
         public String text = "";
         public String typed = "";
 
-        public void s_draw(int xPos, int yPos, PFont f) {
+        public void s_draw(int xPos, int yPos, PFont f, int rect_width) {
+            int f_size = inputFont.getSize();
+            noFill();
+            rect(xPos -4, yPos - (int)f_size/1f, rect_width, f_size + 10, 5);
+            fill(fillColor);
             textFont(inputFont);
             text(text, xPos, yPos);
         }
