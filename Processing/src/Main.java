@@ -22,7 +22,7 @@ public class Main extends PApplet {
     @Override
     public void draw(){
         background(60);
-        input.s_draw(50, 40, inputFont, 200, 40);
+        input.s_draw(50, 40, inputFont, 300, 40);
         input.currentFrame++;
         if (input.currentFrame >= 60){
             input.currentFrame = 0;
@@ -66,7 +66,7 @@ public class Main extends PApplet {
             textFont(f);
 
             fill(bg_color);
-            rect(xPos - textMargin, yPos - (int)f_size/1f, r_width, f_size + 10, 5);
+            rect(xPos - textMargin, yPos - (int)f_size/1f, r_width, f_size + f_size/3, 5);
             fill(fillColor);
 
             t_width = textWidth(text);
