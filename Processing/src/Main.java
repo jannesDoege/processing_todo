@@ -67,11 +67,13 @@ public class Main extends PApplet {
             t_width = textWidth(text);
             text(text, xPos, yPos);
 
-
+            if (active){
+                line(xPos + t_width + textMargin, yPos, xPos + t_width + textMargin, yPos - f_size + f_size/3);
+            }
         }
 
         private boolean validKeyPress(char k){
-            return Character.toString(k).matches("[A-z?]") && t_width < r_width - textWidth(k) - textMargin;
+            return Character.toString(k).matches("[A-z?, ]") && t_width < r_width - textWidth(k) - textMargin;
         }
 
         public void s_type(){
@@ -81,7 +83,7 @@ public class Main extends PApplet {
                     System.out.println(this.typed);
                 }else if(key == BACKSPACE){
                     this.text = remove_last_char(this.text);
-                }else if (validKeyPress(key) || keyCode == 32){
+                }else if (validKeyPress(key)){
                     this.text = this.text + key;
                 }
             }
