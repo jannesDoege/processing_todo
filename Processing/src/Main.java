@@ -1,3 +1,4 @@
+
 import processing.core.PApplet;
 import processing.core.PFont;
 
@@ -96,24 +97,18 @@ public class Main extends PApplet {
         }
 
         public void s_type(){
-            if (active){
-                if (key == '\n'){
-                    this.typed = this.text;
-                    System.out.println(this.typed);
-                }else if(key == BACKSPACE){
-                    this.text = remove_last_char(this.text);
-                }else if (validKeyPress(key)){
-                    this.text = this.text + key;
-                }
+            if (active) if (key == '\n') {
+                this.typed = this.text;
+                System.out.println(this.typed);
+            } else if (key == BACKSPACE) {
+                this.text = remove_last_char(this.text);
+            } else if (validKeyPress(key)) {
+                this.text = this.text + key;
             }
         }
 
         public void click_check(int mx, int my){
-            if (mx > this.xPosition && mx < this.xPosition + this.r_width && this.yPosition > my && this.yPosition < my + this.f_size + f_size/3){
-                active = true;
-            }else{
-                active = false;
-            }
+            active = mx > this.xPosition && mx < this.xPosition + this.r_width && this.yPosition > my && this.yPosition < my + this.f_size + f_size / 3;
         }
     }
 }
