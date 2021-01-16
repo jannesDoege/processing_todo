@@ -36,8 +36,12 @@ public class Main extends PApplet {
 
     @Override
     public void keyPressed() {
-        //System.out.print(input.text);
         input.s_type();
+    }
+
+    @Override
+    public void mousePressed(){
+        input.click_check(mouseX, mouseY);
     }
 
     public static String remove_last_char(String str){
@@ -48,7 +52,7 @@ public class Main extends PApplet {
     }
 
     public class Textinput{
-        public boolean active = true;
+        public boolean active = false;
 
         public String text = "";
         public String typed = "";
@@ -56,25 +60,33 @@ public class Main extends PApplet {
         public int textMargin = 4;
         public int currentFrame = 0;
 
+        int yPosition;
+        int xPosition;
+        int f_size;
+
         float t_width = 0;
         float r_width;
 
 
-        public void s_draw(int xPos, int yPos, PFont f, int rect_width, int bg_color) {
-            int f_size = f.getSize();
+        public void s_draw(int x, int y, PFont f, int rect_width, int bg_color) {
+            f_size = f.getSize();
             r_width = rect_width;
             textFont(f);
 
+            this.yPosition = y;
+            this.xPosition = x;
+
+
             fill(bg_color);
-            rect(xPos - textMargin, yPos - (int)f_size/1f, r_width, f_size + f_size/3, 5);
+            rect(x - textMargin, y - (int)f_size/1f, r_width, f_size + f_size/3, 5);
             fill(fillColor);
 
             t_width = textWidth(text);
-            text(text, xPos, yPos);
+            text(text, x, y);
 
             if (active){
                 if (currentFrame - 20 > 0){
-                    line(xPos + t_width + textMargin, yPos, xPos + t_width + textMargin, yPos - f_size + f_size/3);
+                    line(x + t_width + textMargin, y, x + t_width + textMargin, y - f_size + f_size/3);
                 }
             }
         }
@@ -93,6 +105,14 @@ public class Main extends PApplet {
                 }else if (validKeyPress(key)){
                     this.text = this.text + key;
                 }
+            }
+        }
+
+        public void click_check(int mx, int my){
+            if (mx > this.xPosition && mx < this.xPosition + this.r_width && this.yPosition > my && this.yPosition < my + this.f_size + f_size/3){
+                active = true;
+            }else{
+                active = false;
             }
         }
     }
