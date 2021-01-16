@@ -22,7 +22,11 @@ public class Main extends PApplet {
     @Override
     public void draw(){
         background(60);
-        input.s_draw(50, 40, inputFont, 200, 40) ;
+        input.s_draw(50, 40, inputFont, 200, 40);
+        input.currentFrame++;
+        if (input.currentFrame >= 60){
+            input.currentFrame = 0;
+        }
     }
 
     @Override
@@ -50,6 +54,7 @@ public class Main extends PApplet {
         public String typed = "";
 
         public int textMargin = 4;
+        public int currentFrame = 0;
 
         float t_width = 0;
         float r_width;
@@ -68,7 +73,9 @@ public class Main extends PApplet {
             text(text, xPos, yPos);
 
             if (active){
-                line(xPos + t_width + textMargin, yPos, xPos + t_width + textMargin, yPos - f_size + f_size/3);
+                if (currentFrame - 20 > 0){
+                    line(xPos + t_width + textMargin, yPos, xPos + t_width + textMargin, yPos - f_size + f_size/3);
+                }
             }
         }
 
