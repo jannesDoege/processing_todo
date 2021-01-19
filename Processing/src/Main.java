@@ -2,13 +2,20 @@
 import processing.core.PApplet;
 import processing.core.PFont;
 
+import java.util.function.Function;
+
 public class Main extends PApplet {
     public static void main(String[] args){
 
         PApplet.main("Main", args);
     }
 
-    Textinput input = new Textinput();
+    Textinput input = new Textinput(){
+        @Override
+        public void onEnter() {
+            System.out.println(this.typed);
+        }
+    };
     PFont inputFont;
 
     int fillColor = 200;
@@ -69,6 +76,10 @@ public class Main extends PApplet {
         float r_width;
 
 
+        private boolean validKeyPress(char k){
+            return Character.toString(k).matches("[A-z?, ]") && t_width < r_width - textWidth(k) - textMargin;
+        }
+
         public void s_draw(int x, int y, PFont f, int rect_width, int bg_color) {
             f_size = f.getSize();
             r_width = rect_width;
@@ -92,19 +103,19 @@ public class Main extends PApplet {
             }
         }
 
-        private boolean validKeyPress(char k){
-            return Character.toString(k).matches("[A-z?, ]") && t_width < r_width - textWidth(k) - textMargin;
-        }
-
         public void s_type(){
             if (active) if (key == '\n') {
                 this.typed = this.text;
-                System.out.println(this.typed);
+                onEnter();
             } else if (key == BACKSPACE) {
                 this.text = remove_last_char(this.text);
             } else if (validKeyPress(key)) {
                 this.text = this.text + key;
             }
+        }
+
+        public void onEnter(){
+
         }
 
         public void click_check(int mx, int my){
