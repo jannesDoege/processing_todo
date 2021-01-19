@@ -16,6 +16,14 @@ public class Main extends PApplet {
             System.out.println(this.typed);
         }
     };
+
+    Textinput input2 = new Textinput(){
+        @Override
+        public void onEnter() {
+            System.out.println("zwei");
+        }
+    };
+
     PFont inputFont;
 
     int fillColor = 200;
@@ -31,10 +39,6 @@ public class Main extends PApplet {
     public void draw(){
         background(60);
         input.s_draw(50, 40, inputFont, 300, 40);
-        input.currentFrame++;
-        if (input.currentFrame >= 60){
-            input.currentFrame = 0;
-        }
     }
 
     @Override
@@ -45,6 +49,7 @@ public class Main extends PApplet {
     @Override
     public void keyPressed() {
         input.s_type();
+        input2.s_type();
     }
 
     @Override
@@ -81,6 +86,11 @@ public class Main extends PApplet {
         }
 
         public void s_draw(int x, int y, PFont f, int rect_width, int bg_color) {
+            this.currentFrame++;
+            if (this.currentFrame >= 60){
+                this.currentFrame = 0;
+            }
+
             f_size = f.getSize();
             r_width = rect_width;
             textFont(f);
