@@ -158,6 +158,16 @@ public class Main extends PApplet {
             noFill();
             rect(xPosition, yPosition, r_width, r_height, 5);
             fill(fillColor);
+
+            int i = 0;
+            for(Task task : tasks){
+                this.t_draw(i, displayFont, 4, task);
+                i++;
+            }
+        }
+
+        void t_draw(int taskNumber, PFont font, int textMargin, Task task){
+            
         }
     }
 }
