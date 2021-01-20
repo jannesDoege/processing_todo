@@ -38,7 +38,7 @@ public class Main extends PApplet {
     @Override
     public void draw(){
         background(60);
-        input.s_draw(50, 40, inputFont, 300, 40);
+        input.s_draw(50, 40, inputFont, 300, 40, "Name");
     }
 
     @Override
@@ -85,7 +85,7 @@ public class Main extends PApplet {
             return Character.toString(k).matches("[A-z?, ]") && t_width < r_width - textWidth(k) - textMargin;
         }
 
-        public void s_draw(int x, int y, PFont f, int rect_width, int bg_color) {
+        public void s_draw(int x, int y, PFont f, int rect_width, int bg_color, String bg_text) {
             this.currentFrame++;
             if (this.currentFrame >= 60){
                 this.currentFrame = 0;
@@ -106,10 +106,16 @@ public class Main extends PApplet {
             t_width = textWidth(text);
             text(text, x, y);
 
+
+
             if (active){
                 if (currentFrame - 20 > 0){
                     line(x + t_width + textMargin, y, x + t_width + textMargin, y - f_size + f_size/3);
                 }
+            }else if(text.length() < 1){
+                fill(bg_color + bg_color/2);
+                text(bg_text, x, y);
+                fill(fillColor);
             }
         }
 
@@ -124,9 +130,7 @@ public class Main extends PApplet {
             }
         }
 
-        public void onEnter(){
-
-        }
+        public void onEnter(){}
 
         public void click_check(int mx, int my){
             active = mx > this.xPosition && mx < this.xPosition + this.r_width && this.yPosition > my && this.yPosition < my + this.f_size + f_size / 3;
