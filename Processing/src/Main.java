@@ -130,7 +130,8 @@ public class Main extends PApplet {
         public void onEnter(){}
 
         public void click_check(int mx, int my){
-            active = mx > this.xPosition && mx < this.xPosition + this.r_width && this.yPosition > my && this.yPosition < my + this.f_size + f_size / 3;
+            active = mx > this.xPosition && mx < this.xPosition + this.r_width && this.yPosition > my &&
+                    this.yPosition < my + this.f_size + f_size / 3;
         }
     }
 
@@ -173,7 +174,7 @@ public class Main extends PApplet {
 
         void t_draw(int taskNumber, PFont font, int textMargin, Task task, int marginToParent, int yMargin, int bg_color){
             fill(bg_color);
-            rect(this.xPosition + marginToParent, taskNumber * this.yPosition + yMargin, r_width - marginToParent *2 ,
+            rect(this.xPosition + marginToParent, taskNumber * this.yPosition + yMargin, r_width - marginToParent *2,
                     textHeight + textMargin * 2);
         }
     }
