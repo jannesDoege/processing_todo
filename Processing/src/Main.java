@@ -173,7 +173,7 @@ public class Main extends PApplet {
 
         void t_draw(int taskNumber, PFont font, int textMargin, Task task, int marginToParent, int yMargin, int bg_color){
             fill(bg_color);
-            rect(this.xPosition + marginToParent, taskNumber * this.yPosition + marginToParent, r_width - marginToParent *2 ,
+            rect(this.xPosition + marginToParent, taskNumber * this.yPosition + yMargin, r_width - marginToParent *2 ,
                     textHeight + textMargin * 2);
         }
     }
