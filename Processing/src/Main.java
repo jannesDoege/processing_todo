@@ -22,6 +22,7 @@ public class Main extends PApplet {
     PFont displayFont;
 
     int fillColor = 200;
+    int backgroundColor = 40;
 
     @Override
     public void setup(){
@@ -34,8 +35,8 @@ public class Main extends PApplet {
     @Override
     public void draw(){
         background(60);
-        Input.s_draw(50, 40, inputFont, 300, 40, "Name");
-        TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2);
+        Input.s_draw(50, 40, inputFont, 300, backgroundColor, "Name");
+        TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2, backgroundColor);
     }
 
     @Override
@@ -149,25 +150,31 @@ public class Main extends PApplet {
         int r_width;
         int r_height;
 
-        void s_draw(int x, int y, PFont f, int rect_width, int rect_height){
+        int textHeight;
+
+        void s_draw(int x, int y, PFont f, int rect_width, int rect_height, int bg_color){
             xPosition = x;
             yPosition = y;
             r_width = rect_width;
             r_height = rect_height;
 
+            textHeight = f.getSize();
+
             noFill();
             rect(xPosition, yPosition, r_width, r_height, 5);
             fill(fillColor);
 
-            int i = 0;
+            int i = 1;
             for(Task task : tasks){
-                this.t_draw(i, displayFont, 4, task);
+                this.t_draw(i, displayFont, textMargin, task, 5, 3,bg_color);
                 i++;
             }
         }
 
-        void t_draw(int taskNumber, PFont font, int textMargin, Task task){
-            
+        void t_draw(int taskNumber, PFont font, int textMargin, Task task, int marginToParent, int yMargin, int bg_color){
+            fill(bg_color);
+            rect(this.xPosition + marginToParent, taskNumber * this.yPosition + marginToParent, r_width - marginToParent *2 ,
+                    textHeight + textMargin * 2);
         }
     }
 }
