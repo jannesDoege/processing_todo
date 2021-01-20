@@ -2,29 +2,24 @@
 import processing.core.PApplet;
 import processing.core.PFont;
 
-import java.util.function.Function;
-
 public class Main extends PApplet {
     public static void main(String[] args){
 
         PApplet.main("Main", args);
     }
 
-    Textinput input = new Textinput(){
+    Textinput Input = new Textinput(){
         @Override
         public void onEnter() {
             System.out.println(this.typed);
         }
     };
 
-    Textinput input2 = new Textinput(){
-        @Override
-        public void onEnter() {
-            System.out.println("zwei");
-        }
-    };
+
+    TaskHolder TaskContainer = new TaskHolder();
 
     PFont inputFont;
+    PFont displayFont;
 
     int fillColor = 200;
 
@@ -32,13 +27,15 @@ public class Main extends PApplet {
     public void setup(){
         background(60);
         inputFont = createFont("Arial", 24);
+        displayFont = createFont("Arial", 15);
         fill(fillColor);
     }
 
     @Override
     public void draw(){
         background(60);
-        input.s_draw(50, 40, inputFont, 300, 40, "Name");
+        Input.s_draw(50, 40, inputFont, 300, 40, "Name");
+        TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2);
     }
 
     @Override
@@ -48,13 +45,12 @@ public class Main extends PApplet {
 
     @Override
     public void keyPressed() {
-        input.s_type();
-        input2.s_type();
+        Input.s_type();
     }
 
     @Override
     public void mousePressed(){
-        input.click_check(mouseX, mouseY);
+        Input.click_check(mouseX, mouseY);
     }
 
     public static String remove_last_char(String str){
@@ -134,6 +130,34 @@ public class Main extends PApplet {
 
         public void click_check(int mx, int my){
             active = mx > this.xPosition && mx < this.xPosition + this.r_width && this.yPosition > my && this.yPosition < my + this.f_size + f_size / 3;
+        }
+    }
+
+    public class Task{
+        public String name;
+        public boolean done = false;
+    }
+
+    public class TaskHolder{
+        public int taskAmount = 0;
+        public Task[] tasks = new Task[taskAmount];
+
+        public int textMargin = 4;
+
+        int yPosition;
+        int xPosition;
+        int r_width;
+        int r_height;
+
+        void s_draw(int x, int y, PFont f, int rect_width, int rect_height){
+            xPosition = x;
+            yPosition = y;
+            r_width = rect_width;
+            r_height = rect_height;
+
+            noFill();
+            rect(xPosition, yPosition, r_width, r_height, 5);
+            fill(fillColor);
         }
     }
 }
