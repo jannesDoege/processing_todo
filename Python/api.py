@@ -15,7 +15,7 @@ class TaskModel(db.Model): # baseclass for all tasks
     def __repr__(self):
         return f"Task(name = {self.name}, done = {self.done})"
 
-# db.create_all() # if you are running this script for the first time
+db.create_all() # if you are running this script for the first time
 
 task_put_args = reqparse.RequestParser()
 task_put_args.add_argument("name", type=str, help="Name of task", required = True)
@@ -84,6 +84,7 @@ class TaskAmount(Resource): # info about the total amount of tasks in the databa
     def get(self):
         try:
             rows = TaskModel.query.count()
+            print (rows)
             return rows
         except:
             return 0

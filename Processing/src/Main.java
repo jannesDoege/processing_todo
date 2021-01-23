@@ -1,9 +1,10 @@
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import processing.core.PApplet;
 import processing.core.PFont;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -12,24 +13,43 @@ import java.util.List;
 
 public class Main extends PApplet {
 
-    private static final String BASE_URL = "http://127.0.0.1:5000/";
-
     public Main() throws IOException, InterruptedException {
     }
 
     public static void main(String[] args)  {
         PApplet.main("Main", args);
-
-
     }
 
     HttpClient client = HttpClient.newHttpClient();
+    private static final String BASE_URL = "http://127.0.0.1:5000/";
+
+    public static String remove_last_char(String str){
+        if (str.length() > 0){
+            return str.substring(0, str.length() -1);
+        }
+        return "";
+    }
+
+    public HttpResponse<String> taskInfoRequest(int taskID) throws IOException, InterruptedException {
+        HttpRequest taskInfoRequest = HttpRequest.newBuilder()
+                .GET()
+                .header("accept", "application/json")
+                .uri(URI.create(BASE_URL + "/task/" + taskID))
+                .build();
+        return client.send(taskInfoRequest, HttpResponse.BodyHandlers.ofString());
+    }
+
+
+
     HttpRequest amountRequest = HttpRequest.newBuilder()
             .GET()
             .header("accept", "application/json")
             .uri(URI.create(BASE_URL + "/amount"))
             .build();
-    HttpResponse<String> response = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
+    HttpResponse<String> amountResponse = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
+
+    // json to object
+    ObjectMapper mapper = new ObjectMapper();
 
 
 
@@ -55,7 +75,7 @@ public class Main extends PApplet {
         inputFont = createFont("Arial", 24);
         displayFont = createFont("Arial", 15);
         fill(fillColor);
-        System.out.println(response.body());
+        System.out.println(amountResponse.body());
 
     }
 
@@ -63,7 +83,13 @@ public class Main extends PApplet {
     public void draw(){
         background(60);
         Input.s_draw(50, 40, inputFont, 300, backgroundColor, "Name");
-        TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2, backgroundColor);
+        try {
+            TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2, backgroundColor);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -80,13 +106,6 @@ public class Main extends PApplet {
     @Override
     public void mousePressed(){
         Input.click_check(mouseX, mouseY);
-    }
-
-    public static String remove_last_char(String str){
-        if (str.length() > 0){
-        return str.substring(0, str.length() -1);
-        }
-        return "";
     }
 
     public class Textinput{
@@ -164,8 +183,34 @@ public class Main extends PApplet {
     }
 
     public class Task{
-        public String name;
-        public boolean done = false;
+
+        private String name;
+        private boolean done = false;
+
+        @Override
+        public String toString() {
+            return "Task{" +
+                    "name='" + name + '\'' +
+                    ", done=" + done +
+                    '}';
+        }
+
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public boolean isDone() {
+            return done;
+        }
+
+        public void setDone(boolean done) {
+            this.done = done;
+        }
     }
 
     public class TaskHolder{
@@ -187,7 +232,7 @@ public class Main extends PApplet {
             tasks.add(newTask);
         }
 
-        void s_draw(int x, int y, PFont f, int rect_width, int rect_height, int bg_color){
+        void s_draw(int x, int y, PFont f, int rect_width, int rect_height, int bg_color) throws IOException, InterruptedException {
             xPosition = x;
             yPosition = y;
             r_width = rect_width;
@@ -198,6 +243,8 @@ public class Main extends PApplet {
             noFill();
             rect(xPosition, yPosition, r_width, r_height, 5);
             fill(fillColor);
+
+            s_updateTasks();
 
             int i = 1;
             for(Task task : tasks){
@@ -210,6 +257,13 @@ public class Main extends PApplet {
             fill(bg_color);
             rect(this.xPosition + marginToParent, taskNumber * this.yPosition + yMargin, r_width - marginToParent *2,
                     textHeight + textMargin * 2);
+        }
+
+        void s_updateTasks() throws IOException, InterruptedException {
+            for (int i = 0; i < Integer.parseInt(amountResponse.body().substring(0, 1)); i++){
+                List<Task> new_tasks = mapper.readValue(taskInfoRequest(i).body(), List.class);
+                System.out.println(new_tasks);
+            }
         }
     }
 }
