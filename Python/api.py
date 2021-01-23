@@ -82,11 +82,16 @@ class Task(Resource): # task resource
 
 class TaskAmount(Resource): # info about the total amount of tasks in the database
     def get(self):
-        rows = TaskModel.query.count()
-        return rows
+        try:
+            rows = TaskModel.query.count()
+            return rows
+        except:
+            return 0
+        
+        
 
 api.add_resource(Task, "/task/<int:task_id>") # add resource to the api
-api.add_resource(TaskAmount, "/")
+api.add_resource(TaskAmount, "/amount")
 
 if __name__ == "__main__": 
     app.run(debug=True)

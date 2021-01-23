@@ -1,12 +1,38 @@
-
 import processing.core.PApplet;
 import processing.core.PFont;
 
-public class Main extends PApplet {
-    public static void main(String[] args){
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
-        PApplet.main("Main", args);
+public class Main extends PApplet {
+
+    private static final String BASE_URL = "http://127.0.0.1:5000/";
+
+    public Main() throws IOException, InterruptedException {
     }
+
+    public static void main(String[] args)  {
+        PApplet.main("Main", args);
+
+
+    }
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest amountRequest = HttpRequest.newBuilder()
+            .GET()
+            .header("accept", "application/json")
+            .uri(URI.create(BASE_URL + "/amount"))
+            .build();
+    HttpResponse<String> response = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
+
+
+
 
     Textinput Input = new Textinput(){
         @Override
@@ -14,7 +40,6 @@ public class Main extends PApplet {
             System.out.println(this.typed);
         }
     };
-
 
     TaskHolder TaskContainer = new TaskHolder();
 
@@ -30,6 +55,8 @@ public class Main extends PApplet {
         inputFont = createFont("Arial", 24);
         displayFont = createFont("Arial", 15);
         fill(fillColor);
+        System.out.println(response.body());
+
     }
 
     @Override
@@ -37,6 +64,7 @@ public class Main extends PApplet {
         background(60);
         Input.s_draw(50, 40, inputFont, 300, backgroundColor, "Name");
         TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2, backgroundColor);
+
     }
 
     @Override
@@ -142,7 +170,8 @@ public class Main extends PApplet {
 
     public class TaskHolder{
         public int taskAmount = 0;
-        public Task[] tasks = new Task[taskAmount];
+
+        List<Task> tasks = new ArrayList<Task>();
 
         public int textMargin = 4;
 
@@ -152,6 +181,11 @@ public class Main extends PApplet {
         int r_height;
 
         int textHeight;
+
+        public void addTask(Task newTask){
+            taskAmount++;
+            tasks.add(newTask);
+        }
 
         void s_draw(int x, int y, PFont f, int rect_width, int rect_height, int bg_color){
             xPosition = x;
