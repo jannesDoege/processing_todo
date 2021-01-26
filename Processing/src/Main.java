@@ -182,7 +182,7 @@ public class Main extends PApplet {
         }
     }
 
-    public class Task{
+    class Task{
 
         private String name;
         private boolean done = false;
