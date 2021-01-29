@@ -246,7 +246,7 @@ public class Main extends PApplet {
         }
 
         void s_updateTasks() throws IOException, InterruptedException {
-            for (int i = 0; i < amount_request(); i++){
+            for (int i = 0; i < amount_request() + 1; i++){
                 Gson g = new Gson();
                 System.out.println(taskInfoRequest(i).body());
                 Task new_task = g.fromJson(taskInfoRequest(i).body(), Task.class);
