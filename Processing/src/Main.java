@@ -4,12 +4,16 @@ import processing.core.PApplet;
 import processing.core.PFont;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import com.google.gson.Gson;
 
 public class Main extends PApplet {
 
@@ -36,23 +40,21 @@ public class Main extends PApplet {
                 .header("accept", "application/json")
                 .uri(URI.create(BASE_URL + "/task/" + taskID))
                 .build();
-        return client.send(taskInfoRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = client.send(taskInfoRequest, HttpResponse.BodyHandlers.ofString());
+        return response;
     }
 
 
-
-    HttpRequest amountRequest = HttpRequest.newBuilder()
-            .GET()
-            .header("accept", "application/json")
-            .uri(URI.create(BASE_URL + "/amount"))
-            .build();
-    HttpResponse<String> amountResponse = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
-
-    // json to object
-    ObjectMapper mapper = new ObjectMapper();
-
-
-
+    public int amount_request() throws IOException, InterruptedException {
+        HttpRequest amountRequest = HttpRequest.newBuilder()
+                .GET()
+                .header("accept", "application/json")
+                .uri(URI.create(BASE_URL + "/amount"))
+                .build();
+        HttpResponse<String> amountResponse = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
+        print(amountResponse.body());
+        return parseInt(amountResponse.body());
+    }
 
     Textinput Input = new Textinput(){
         @Override
@@ -75,8 +77,6 @@ public class Main extends PApplet {
         inputFont = createFont("Arial", 24);
         displayFont = createFont("Arial", 15);
         fill(fillColor);
-        System.out.println(amountResponse.body());
-
     }
 
     @Override
@@ -183,34 +183,9 @@ public class Main extends PApplet {
     }
 
     class Task{
-
-        private String name;
-        private boolean done = false;
-
-        @Override
-        public String toString() {
-            return "Task{" +
-                    "name='" + name + '\'' +
-                    ", done=" + done +
-                    '}';
-        }
-
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public boolean isDone() {
-            return done;
-        }
-
-        public void setDone(boolean done) {
-            this.done = done;
-        }
+        public int id;
+        public String name;
+        public boolean done = false;
     }
 
     public class TaskHolder{
@@ -228,8 +203,17 @@ public class Main extends PApplet {
         int textHeight;
 
         public void addTask(Task newTask){
-            taskAmount++;
-            tasks.add(newTask);
+            boolean invalid = false;
+
+            for(Task task : tasks){
+                invalid = task.id == newTask.id;
+            }
+
+            if(!invalid){
+                taskAmount++;
+                tasks.add(newTask);
+            }
+
         }
 
         void s_draw(int x, int y, PFont f, int rect_width, int rect_height, int bg_color) throws IOException, InterruptedException {
@@ -260,9 +244,12 @@ public class Main extends PApplet {
         }
 
         void s_updateTasks() throws IOException, InterruptedException {
-            for (int i = 0; i < Integer.parseInt(amountResponse.body().substring(0, 1)); i++){
-                List<Task> new_tasks = mapper.readValue(taskInfoRequest(i).body(), List.class);
-                System.out.println(new_tasks);
+            for (int i = 0; i < 1; i++){
+                print("yay");
+                Gson g = new Gson();
+                System.out.println(taskInfoRequest(i).body());
+                Task new_task = g.fromJson(taskInfoRequest(i).body(), Task.class);
+                addTask(new_task);
             }
         }
     }
