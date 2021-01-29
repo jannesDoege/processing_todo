@@ -1,17 +1,12 @@
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import processing.core.PApplet;
 import processing.core.PFont;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import com.google.gson.Gson;
 
@@ -52,8 +47,7 @@ public class Main extends PApplet {
                 .uri(URI.create(BASE_URL + "/amount"))
                 .build();
         HttpResponse<String> amountResponse = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
-        print(amountResponse.body());
-        return parseInt(amountResponse.body());
+        return parseInt(amountResponse.body()) + 1;
     }
 
     Textinput Input = new Textinput(){
@@ -85,6 +79,13 @@ public class Main extends PApplet {
         Input.s_draw(50, 40, inputFont, 300, backgroundColor, "Name");
         try {
             TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2, backgroundColor);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            amount_request();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -190,6 +191,7 @@ public class Main extends PApplet {
 
     public class TaskHolder{
         public int taskAmount = 0;
+        private int newTaskAmount;
 
         List<Task> tasks = new ArrayList<Task>();
 
@@ -244,8 +246,7 @@ public class Main extends PApplet {
         }
 
         void s_updateTasks() throws IOException, InterruptedException {
-            for (int i = 0; i < 1; i++){
-                print("yay");
+            for (int i = 0; i < amount_request(); i++){
                 Gson g = new Gson();
                 System.out.println(taskInfoRequest(i).body());
                 Task new_task = g.fromJson(taskInfoRequest(i).body(), Task.class);
