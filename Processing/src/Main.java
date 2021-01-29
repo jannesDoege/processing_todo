@@ -47,7 +47,8 @@ public class Main extends PApplet {
                 .uri(URI.create(BASE_URL + "/amount"))
                 .build();
         HttpResponse<String> amountResponse = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
-        return parseInt(amountResponse.body()) + 1;
+        System.out.println(Integer.valueOf(remove_last_char(amountResponse.body())));
+        return Integer.valueOf(remove_last_char(amountResponse.body()));
     }
 
     Textinput Input = new Textinput(){
@@ -71,6 +72,7 @@ public class Main extends PApplet {
         inputFont = createFont("Arial", 24);
         displayFont = createFont("Arial", 15);
         fill(fillColor);
+        frameRate(120);
     }
 
     @Override
@@ -132,7 +134,7 @@ public class Main extends PApplet {
 
         public void s_draw(int x, int y, PFont f, int rect_width, int bg_color, String bg_text) {
             this.currentFrame++;
-            if (this.currentFrame >= 60){
+            if (this.currentFrame >= frameRate){
                 this.currentFrame = 0;
             }
 
@@ -154,7 +156,7 @@ public class Main extends PApplet {
 
 
             if (active){
-                if (currentFrame - 20 > 0){
+                if (currentFrame - frameRate/3 > 0){
                     line(x + t_width + textMargin, y, x + t_width + textMargin, y - f_size + f_size/3);
                 }
             }else if(text.length() < 1){
@@ -204,18 +206,15 @@ public class Main extends PApplet {
 
         int textHeight;
 
-        public void addTask(Task newTask){
-            boolean invalid = false;
-
+        public boolean addTask(Task newTask){
             for(Task task : tasks){
-                invalid = task.id == newTask.id;
+                if(task.id == newTask.id){
+                    return false;
+                }
             }
-
-            if(!invalid){
-                taskAmount++;
-                tasks.add(newTask);
-            }
-
+            taskAmount++;
+            tasks.add(newTask);
+            return true;
         }
 
         void s_draw(int x, int y, PFont f, int rect_width, int rect_height, int bg_color) throws IOException, InterruptedException {
@@ -246,7 +245,7 @@ public class Main extends PApplet {
         }
 
         void s_updateTasks() throws IOException, InterruptedException {
-            for (int i = 0; i < amount_request() + 1; i++){
+            for (int i = 0; i < amount_request(); i++){
                 Gson g = new Gson();
                 System.out.println(taskInfoRequest(i).body());
                 Task new_task = g.fromJson(taskInfoRequest(i).body(), Task.class);
