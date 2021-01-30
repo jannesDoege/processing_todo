@@ -231,7 +231,7 @@ public class Main extends PApplet {
 
             s_updateTasks();
 
-            int i = 1;
+            int i = 0;
             for(Task task : tasks){
                 this.t_draw(i, displayFont, textMargin, task, 5, 3,bg_color);
                 i++;
@@ -240,7 +240,7 @@ public class Main extends PApplet {
 
         void t_draw(int taskNumber, PFont font, int textMargin, Task task, int marginToParent, int yMargin, int bg_color){
             fill(bg_color);
-            rect(this.xPosition + marginToParent, taskNumber * this.yPosition + yMargin, r_width - marginToParent *2,
+            rect(this.xPosition + marginToParent, this.yPosition + yMargin + ((textHeight + textMargin) * 2) * taskNumber, r_width - marginToParent *2,
                     textHeight + textMargin * 2);
         }
 
