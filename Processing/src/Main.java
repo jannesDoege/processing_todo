@@ -47,7 +47,7 @@ public class Main extends PApplet {
                 .uri(URI.create(BASE_URL + "/amount"))
                 .build();
         HttpResponse<String> amountResponse = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
-        System.out.println(Integer.valueOf(remove_last_char(amountResponse.body())));
+        //System.out.println(Integer.valueOf(remove_last_char(amountResponse.body())));
         return Integer.valueOf(remove_last_char(amountResponse.body()));
     }
 
@@ -206,6 +206,9 @@ public class Main extends PApplet {
 
         int textHeight;
 
+        int taskX;
+        int taskY;
+
         public boolean addTask(Task newTask){
             for(Task task : tasks){
                 if(task.id == newTask.id){
@@ -240,14 +243,20 @@ public class Main extends PApplet {
 
         void t_draw(int taskNumber, PFont font, int textMargin, Task task, int marginToParent, int yMargin, int bg_color){
             fill(bg_color);
-            rect(this.xPosition + marginToParent, this.yPosition + yMargin + ((textHeight + textMargin) * 2) * taskNumber, r_width - marginToParent *2,
-                    textHeight + textMargin * 2);
+            taskX = this.xPosition + marginToParent;
+            taskY = this.yPosition + yMargin + ((textHeight + textMargin) * 2) * taskNumber;
+            rect(taskX, taskY, r_width - marginToParent *2, textHeight + textMargin * 2);
+
+            fill(255);
+            textFont(font);
+            text(task.name, taskX + textMargin, taskY + textHeight + yMargin);
+            fill(fillColor);
         }
 
         void s_updateTasks() throws IOException, InterruptedException {
             for (int i = 0; i < amount_request(); i++){
                 Gson g = new Gson();
-                System.out.println(taskInfoRequest(i).body());
+                //System.out.println(taskInfoRequest(i).body());
                 Task new_task = g.fromJson(taskInfoRequest(i).body(), Task.class);
                 addTask(new_task);
             }
