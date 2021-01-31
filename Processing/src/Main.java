@@ -12,9 +12,6 @@ import com.google.gson.Gson;
 
 public class Main extends PApplet {
 
-    public Main() throws IOException, InterruptedException {
-    }
-
     public static void main(String[] args)  {
         PApplet.main("Main", args);
     }
