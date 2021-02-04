@@ -45,13 +45,11 @@ public class Main extends PApplet {
 
             {
                 put("name", taskName);
-                put("done", false);
             }
         };
 
         ObjectMapper mapper = new ObjectMapper();
         String data = mapper.writeValueAsString(newData);
-        System.out.println(data);
 
 
         HttpRequest taskPutRequest = HttpRequest.newBuilder()
@@ -71,14 +69,13 @@ public class Main extends PApplet {
                 .uri(URI.create(BASE_URL + "/amount"))
                 .build();
         HttpResponse<String> amountResponse = client.send(amountRequest, HttpResponse.BodyHandlers.ofString());
-        //System.out.println(Integer.valueOf(remove_last_char(amountResponse.body())));
         return Integer.valueOf(remove_last_char(amountResponse.body()));
     }
 
     Textinput Input = new Textinput(){
         @Override
         public void onEnter() throws IOException, InterruptedException {
-            System.out.println(taskPostRequest(this.typed).body());
+            taskPostRequest(this.typed);
         }
     };
 
