@@ -19,7 +19,7 @@ class TaskModel(db.Model): # baseclass for all tasks
 
 task_put_args = reqparse.RequestParser()
 task_put_args.add_argument("name", type=str, help="Name of task", required = True)
-task_put_args.add_argument("done", type=inputs.boolean, help="Is the task done", required = True)
+task_put_args.add_argument("done", type=inputs.boolean, help="Is the task done", required = False)
 
 task_update_args = reqparse.RequestParser()
 task_update_args.add_argument("name", type=str, help="Name of task", required=False)
@@ -41,7 +41,7 @@ class Task(Resource): # task resource
         return result
     
     @marshal_with(resource_fields)
-    def put(self, task_id):
+    def post(self, task_id):
         args = task_put_args.parse_args() # get acces to the arguments
         result = TaskModel.query.filter_by(id=task_id).first()
         if result:

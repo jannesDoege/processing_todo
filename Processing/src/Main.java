@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import processing.core.PApplet;
 import processing.core.PFont;
 
@@ -7,8 +9,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import com.google.gson.Gson;
+import java.util.Map;
 
 public class Main extends PApplet {
 
@@ -36,6 +39,29 @@ public class Main extends PApplet {
         return response;
     }
 
+    public HttpResponse<String> taskPutRequest(String taskName) throws IOException, InterruptedException {
+        int id = amount_request();
+        Map newData = new HashMap<>() {
+
+            {
+                put("name", taskName);
+                put("done", false);
+            }
+        };
+
+        ObjectMapper mapper = new ObjectMapper();
+        String data = mapper.writeValueAsString(newData);
+        System.out.println(data);
+
+
+        HttpRequest taskPutRequest = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(data))
+                .uri(URI.create(BASE_URL + "task/" + id))
+                .build();
+        HttpResponse<String> response = client.send(taskPutRequest, HttpResponse.BodyHandlers.ofString());
+        return response;
+    }
+
 
     public int amount_request() throws IOException, InterruptedException {
         HttpRequest amountRequest = HttpRequest.newBuilder()
@@ -50,8 +76,8 @@ public class Main extends PApplet {
 
     Textinput Input = new Textinput(){
         @Override
-        public void onEnter() {
-            System.out.println(this.typed);
+        public void onEnter() throws IOException, InterruptedException {
+            System.out.println(taskPutRequest(this.typed).body());
         }
     };
 
@@ -69,7 +95,7 @@ public class Main extends PApplet {
         inputFont = createFont("Arial", 24);
         displayFont = createFont("Arial", 15);
         fill(fillColor);
-        frameRate(120);
+        frameRate(60);
     }
 
     @Override
@@ -100,7 +126,13 @@ public class Main extends PApplet {
 
     @Override
     public void keyPressed() {
-        Input.s_type();
+        try {
+            Input.s_type();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -163,7 +195,7 @@ public class Main extends PApplet {
             }
         }
 
-        public void s_type(){
+        public void s_type() throws IOException, InterruptedException {
             if (active) if (key == '\n') {
                 this.typed = this.text;
                 onEnter();
@@ -174,7 +206,7 @@ public class Main extends PApplet {
             }
         }
 
-        public void onEnter(){}
+        public void onEnter() throws IOException, InterruptedException {}
 
         public void click_check(int mx, int my){
             active = mx > this.xPosition && mx < this.xPosition + this.r_width && this.yPosition > my &&
@@ -259,4 +291,6 @@ public class Main extends PApplet {
             }
         }
     }
+
+    private static class False{}
 }
