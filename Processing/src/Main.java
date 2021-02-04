@@ -39,7 +39,7 @@ public class Main extends PApplet {
         return response;
     }
 
-    public HttpResponse<String> taskPutRequest(String taskName) throws IOException, InterruptedException {
+    public HttpResponse<String> taskPostRequest(String taskName) throws IOException, InterruptedException {
         int id = amount_request();
         Map newData = new HashMap<>() {
 
@@ -55,6 +55,7 @@ public class Main extends PApplet {
 
 
         HttpRequest taskPutRequest = HttpRequest.newBuilder()
+                .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(data))
                 .uri(URI.create(BASE_URL + "task/" + id))
                 .build();
@@ -77,7 +78,7 @@ public class Main extends PApplet {
     Textinput Input = new Textinput(){
         @Override
         public void onEnter() throws IOException, InterruptedException {
-            System.out.println(taskPutRequest(this.typed).body());
+            System.out.println(taskPostRequest(this.typed).body());
         }
     };
 
