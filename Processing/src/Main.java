@@ -41,7 +41,7 @@ public class Main extends PApplet {
 
     public HttpResponse<String> taskPostRequest(String taskName) throws IOException, InterruptedException {
         int id = amount_request();
-        Map newData = new HashMap<>() {
+        Map mapData = new HashMap<>() {
 
             {
                 put("name", taskName);
@@ -49,7 +49,7 @@ public class Main extends PApplet {
         };
 
         ObjectMapper mapper = new ObjectMapper();
-        String data = mapper.writeValueAsString(newData);
+        String data = mapper.writeValueAsString(mapData);
 
 
         HttpRequest taskPutRequest = HttpRequest.newBuilder()
@@ -58,6 +58,23 @@ public class Main extends PApplet {
                 .uri(URI.create(BASE_URL + "task/" + id))
                 .build();
         HttpResponse<String> response = client.send(taskPutRequest, HttpResponse.BodyHandlers.ofString());
+        return response;
+    }
+
+    public HttpResponse<String> markTaskAsDone(int taskID) throws IOException, InterruptedException {
+        Map mapData = new HashMap<>(){{
+            put("done", true);
+        }};
+
+        ObjectMapper mapper = new ObjectMapper();
+        String data = mapper.writeValueAsString(mapData);
+
+        HttpRequest markTaskAsDoneRequest = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "task/" + taskID))
+                .method("PATCH", HttpRequest.BodyPublishers.ofString(data))
+                .header("Content-Type", "application/json")
+                .build();
+        HttpResponse<String> response = client.send(markTaskAsDoneRequest, HttpResponse.BodyHandlers.ofString());
         return response;
     }
 
@@ -276,7 +293,7 @@ public class Main extends PApplet {
             taskY = this.yPosition + yMargin + ((textHeight + textMargin) * 2) * taskNumber;
 
             if(taskY > r_height){
-                
+
             }
 
             rect(taskX, taskY, r_width - marginToParent *2, textHeight + textMargin * 2);
