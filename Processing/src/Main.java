@@ -80,6 +80,7 @@ public class Main extends PApplet {
 
     public HttpResponse<String> deleteTask(int taskID) throws IOException, InterruptedException {
         TaskContainer.tasks.remove(taskID);
+        TaskContainer.dButtons.remove(taskID);
         HttpRequest deleteTask = HttpRequest.newBuilder()
                 .DELETE()
                 .uri(URI.create(BASE_URL + "task/" + taskID))
@@ -109,6 +110,8 @@ public class Main extends PApplet {
             this.text = "";
         }
     };
+
+    DeleteButton testButton = new DeleteButton(1);
 
     TaskHolder TaskContainer = new TaskHolder();
 
@@ -146,6 +149,8 @@ public class Main extends PApplet {
             e.printStackTrace();
         }
 
+        testButton.s_draw(1, 1, 10, 10);
+
     }
 
     @Override
@@ -167,6 +172,7 @@ public class Main extends PApplet {
     @Override
     public void mousePressed(){
         Input.click_check(mouseX, mouseY);
+        testButton.onClick();
     }
 
     public class Textinput{
@@ -253,6 +259,7 @@ public class Main extends PApplet {
         public int taskAmount = 0;
 
         List<Task> tasks = new ArrayList<Task>();
+        List<DeleteButton> dButtons = new ArrayList<DeleteButton>();
 
         public int textMargin = 4;
 
@@ -274,6 +281,7 @@ public class Main extends PApplet {
             }
             taskAmount++;
             tasks.add(newTask);
+            dButtons.add(new DeleteButton(newTask.id));
 
             return true;
         }
@@ -294,12 +302,13 @@ public class Main extends PApplet {
 
             int i = 0;
             for(Task task : tasks){
-                this.t_draw(i, displayFont, textMargin, task, 5, 3,bg_color);
+                this.t_draw(i, displayFont, textMargin, task, dButtons.get(i), 5, 3,bg_color);
                 i++;
             }
         }
 
-        void t_draw(int taskNumber, PFont font, int textMargin, Task task, int marginToParent, int yMargin, int bg_color){
+        void t_draw(int taskNumber, PFont font, int textMargin, Task task, DeleteButton deleteButton,
+                    int marginToParent, int yMargin, int bg_color){
             fill(bg_color);
             taskX = this.xPosition + marginToParent;
             taskY = this.yPosition + yMargin + ((textHeight + textMargin) * 2) * taskNumber;
@@ -308,7 +317,10 @@ public class Main extends PApplet {
 
             }
 
-            rect(taskX, taskY, r_width - marginToParent *2, textHeight + textMargin * 2);
+            deleteButton.s_draw(taskY, taskX + r_width - marginToParent *2 - deleteButton.r_width, textHeight + textMargin * 2,
+                    textHeight + textMargin * 2);
+
+            rect(taskX, taskY, r_width - marginToParent *2 - deleteButton.r_width, textHeight + textMargin * 2);
 
             fill(255);
             textFont(font);
@@ -322,6 +334,61 @@ public class Main extends PApplet {
                 Task new_task = g.fromJson(taskInfoRequest(i).body(), Task.class);
 
                 addTask(new_task);
+            }
+        }
+    }
+
+    abstract class Button{
+        int yPosition;
+        int xPosition;
+        int r_width;
+        int r_height;
+
+        public void s_draw(){
+            fill(fillColor);
+            rect(xPosition, yPosition, r_width, r_height);
+            if (mouseX > this.xPosition && mouseX < this.xPosition + this.r_width && mouseY > this.yPosition &&
+                    mouseY < this.yPosition + this.r_height){
+            }
+        }
+
+        public void onClick() {}
+
+    }
+
+    class DeleteButton extends Button{
+        public int parentTaskID;
+
+        public DeleteButton( int id){
+            this.parentTaskID = id;
+        }
+
+        public void s_draw(int yp, int xp, int rw, int rh) {
+            this.yPosition = yp;
+            this.xPosition = xp;
+            this.r_width = rw;
+            this.r_height = rh;
+
+            fill(fillColor);
+            super.s_draw();
+
+            stroke(255, 0, 0);
+            line(xPosition + (int) r_width/5, yPosition + (int) r_height/5, xPosition + r_width - (int) r_width/5,
+                    yPosition + r_height - (int) r_height/5);
+
+            line(xPosition + (int) r_width/5, yPosition + r_height - (int) r_height/5, xPosition + r_width - (int) r_width/5,
+                    yPosition + (int) r_height/5);
+            stroke(0);
+        }
+
+        @Override
+        public void onClick() {
+            try {
+                deleteTask(parentTaskID);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
