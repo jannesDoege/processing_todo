@@ -111,7 +111,6 @@ public class Main extends PApplet {
         }
     };
 
-    DeleteButton testButton = new DeleteButton(1);
 
     TaskHolder TaskContainer = new TaskHolder();
 
@@ -149,8 +148,6 @@ public class Main extends PApplet {
             e.printStackTrace();
         }
 
-        testButton.s_draw(1, 1, 10, 10);
-
     }
 
     @Override
@@ -172,7 +169,9 @@ public class Main extends PApplet {
     @Override
     public void mousePressed(){
         Input.click_check(mouseX, mouseY);
-        testButton.onClick();
+        for (int i = 0; i < TaskContainer.dButtons.size(); i++){
+            TaskContainer.dButtons.get(i).onClick();
+        }
     }
 
     public class Textinput{
@@ -345,7 +344,6 @@ public class Main extends PApplet {
         int r_height;
 
         public void s_draw(){
-            fill(fillColor);
             rect(xPosition, yPosition, r_width, r_height);
             if (mouseX > this.xPosition && mouseX < this.xPosition + this.r_width && mouseY > this.yPosition &&
                     mouseY < this.yPosition + this.r_height){
@@ -369,7 +367,6 @@ public class Main extends PApplet {
             this.r_width = rw;
             this.r_height = rh;
 
-            fill(fillColor);
             super.s_draw();
 
             stroke(255, 0, 0);
