@@ -78,6 +78,18 @@ public class Main extends PApplet {
         return response;
     }
 
+    public HttpResponse<String> deleteTask(int taskID) throws IOException, InterruptedException {
+        TaskContainer.tasks.remove(taskID);
+        HttpRequest deleteTask = HttpRequest.newBuilder()
+                .DELETE()
+                .uri(URI.create(BASE_URL + "task/" + taskID))
+                .header("Content-Type", "application/json")
+                .build();
+
+        HttpResponse<String> response = client.send(deleteTask, HttpResponse.BodyHandlers.ofString());
+        return response;
+    }
+
 
     public int amount_request() throws IOException, InterruptedException {
         HttpRequest amountRequest = HttpRequest.newBuilder()
@@ -239,7 +251,6 @@ public class Main extends PApplet {
 
     public class TaskHolder{
         public int taskAmount = 0;
-        private int newTaskAmount;
 
         List<Task> tasks = new ArrayList<Task>();
 
@@ -257,12 +268,13 @@ public class Main extends PApplet {
 
         public boolean addTask(Task newTask){
             for(Task task : tasks){
-                if(task.id == newTask.id){
-                    return false;
-                }
+               if(task.id == newTask.id){
+                   return false;
+               }
             }
             taskAmount++;
             tasks.add(newTask);
+
             return true;
         }
 
@@ -308,6 +320,7 @@ public class Main extends PApplet {
             for (int i = 0; i < amount_request(); i++){
                 Gson g = new Gson();
                 Task new_task = g.fromJson(taskInfoRequest(i).body(), Task.class);
+
                 addTask(new_task);
             }
         }
