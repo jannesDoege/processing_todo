@@ -76,6 +76,8 @@ public class Main extends PApplet {
         @Override
         public void onEnter() throws IOException, InterruptedException {
             taskPostRequest(this.typed);
+            this.typed = "";
+            this.text = "";
         }
     };
 
@@ -99,7 +101,7 @@ public class Main extends PApplet {
     @Override
     public void draw(){
         background(60);
-        Input.s_draw(50, 40, inputFont, 300, backgroundColor, "Name");
+        Input.s_draw((int) Math.round(width/10), (int) Math.round(height/12.5), inputFont, (int) Math.round(width*0.6), backgroundColor, "Name");
         try {
             TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2, backgroundColor);
         } catch (IOException e) {
@@ -174,7 +176,7 @@ public class Main extends PApplet {
 
 
             fill(bg_color);
-            rect(x - textMargin, y - (int)f_size/1f, r_width, f_size + f_size/3, 5);
+            rect(x - textMargin, y - f_size, r_width, f_size + f_size/3, 5);
             fill(fillColor);
 
             t_width = textWidth(text);
@@ -183,8 +185,8 @@ public class Main extends PApplet {
 
 
             if (active){
-                if (currentFrame - frameRate/3 > 0){
-                    line(x + t_width + textMargin, y, x + t_width + textMargin, y - f_size + f_size/3);
+                if (currentFrame - (int)frameRate/3 > 0){
+                    line(x + t_width + (int) textMargin/2, y, x + t_width + (int) textMargin/2, y - f_size + (int) f_size/3);
                 }
             }else if(text.length() < 1){
                 fill(bg_color + bg_color/2);
@@ -272,6 +274,11 @@ public class Main extends PApplet {
             fill(bg_color);
             taskX = this.xPosition + marginToParent;
             taskY = this.yPosition + yMargin + ((textHeight + textMargin) * 2) * taskNumber;
+
+            if(taskY > r_height){
+                
+            }
+
             rect(taskX, taskY, r_width - marginToParent *2, textHeight + textMargin * 2);
 
             fill(255);
@@ -283,12 +290,9 @@ public class Main extends PApplet {
         void s_updateTasks() throws IOException, InterruptedException {
             for (int i = 0; i < amount_request(); i++){
                 Gson g = new Gson();
-                //System.out.println(taskInfoRequest(i).body());
                 Task new_task = g.fromJson(taskInfoRequest(i).body(), Task.class);
                 addTask(new_task);
             }
         }
     }
-
-    private static class False{}
 }
