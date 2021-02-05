@@ -389,13 +389,17 @@ public class Main extends PApplet {
 
         @Override
         public void onClick() {
-            try {
-                deleteTask(parentTaskID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (mouseX > this.xPosition && mouseX < this.xPosition + this.r_width && mouseY > this.yPosition &&
+            mouseY < this.yPosition + this.r_height){
+                try {
+                    deleteTask(parentTaskID);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+
         }
     }
 }

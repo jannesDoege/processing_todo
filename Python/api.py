@@ -35,6 +35,7 @@ resource_fields = {
 class Task(Resource): # task resource
     @marshal_with(resource_fields) # serialize object
     def get(self, task_id):
+
         result = TaskModel.query.filter_by(id=task_id).first() # get the task with the correct id
         if not result: # abort if the id is invalid
             abort(404, message="There is no task associated with that id - try a different one")
@@ -75,8 +76,12 @@ class Task(Resource): # task resource
         if not result:
             abort(404, message="there is no task with that id")
         
+        
+        updateIDs()
         db.session.delete(result)
         db.session.commit()
+        updateIDs()
+
 
         return "", 204
 
@@ -85,6 +90,12 @@ class TaskAmount(Resource): # info about the total amount of tasks in the databa
         rows = TaskModel.query.count()
         print (rows)
         return rows
+
+def updateIDs():
+    for i in range(TaskModel.query.count()):
+        print(i)
+        task = TaskModel.query.get(i+1)
+        task.id = i
         
         
         
