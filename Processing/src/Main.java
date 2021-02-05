@@ -81,6 +81,15 @@ public class Main extends PApplet {
     public HttpResponse<String> deleteTask(int taskID) throws IOException, InterruptedException {
         TaskContainer.tasks.remove(taskID);
         TaskContainer.dButtons.remove(taskID);
+
+        for (Task task : TaskContainer.tasks){
+            task.id = TaskContainer.tasks.indexOf(task);
+        }
+
+        for (DeleteButton e : TaskContainer.dButtons){
+            e.parentTaskID = TaskContainer.dButtons.indexOf(e);
+        }
+
         HttpRequest deleteTask = HttpRequest.newBuilder()
                 .DELETE()
                 .uri(URI.create(BASE_URL + "task/" + taskID))

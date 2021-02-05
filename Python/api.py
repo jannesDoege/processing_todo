@@ -43,7 +43,7 @@ class Task(Resource): # task resource
     @marshal_with(resource_fields)
     def post(self, task_id):
         args = task_put_args.parse_args() # get acces to the arguments
-        result = TaskModel.query.filter_by(id=task_id).first()
+        result = TaskModel.query.filter_by(id=TaskModel.query.count()).first()
         if result:
             abort(409, message="Task id already in use...")
 
