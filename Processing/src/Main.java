@@ -61,16 +61,18 @@ public class Main extends PApplet {
         return response;
     }
 
-    public HttpResponse<String> markTaskAsDone(int taskID) throws IOException, InterruptedException {
+    public HttpResponse<String> changeTaskDone(Task task) throws IOException, InterruptedException {
+        task.done = !task.done;
+
         Map mapData = new HashMap<>(){{
-            put("done", true);
+            put("done", task.done);
         }};
 
         ObjectMapper mapper = new ObjectMapper();
         String data = mapper.writeValueAsString(mapData);
 
         HttpRequest markTaskAsDoneRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "task/" + taskID))
+                .uri(URI.create(BASE_URL + "task/" + task.id))
                 .method("PATCH", HttpRequest.BodyPublishers.ofString(data))
                 .header("Content-Type", "application/json")
                 .build();
@@ -80,14 +82,14 @@ public class Main extends PApplet {
 
     public HttpResponse<String> deleteTask(int taskID) throws IOException, InterruptedException {
         TaskContainer.tasks.remove(taskID);
-        TaskContainer.dButtons.remove(taskID);
+        TaskContainer.delButtons.remove(taskID);
 
         for (Task task : TaskContainer.tasks){
             task.id = TaskContainer.tasks.indexOf(task);
         }
 
-        for (DeleteButton e : TaskContainer.dButtons){
-            e.parentTaskID = TaskContainer.dButtons.indexOf(e);
+        for (DeleteButton e : TaskContainer.delButtons){
+            e.parentTaskID = TaskContainer.delButtons.indexOf(e);
         }
 
         HttpRequest deleteTask = HttpRequest.newBuilder()
@@ -178,8 +180,18 @@ public class Main extends PApplet {
     @Override
     public void mousePressed(){
         Input.click_check(mouseX, mouseY);
-        for (int i = 0; i < TaskContainer.dButtons.size(); i++){
-            TaskContainer.dButtons.get(i).onClick();
+        for (int i = 0; i < TaskContainer.delButtons.size(); i++){
+            TaskContainer.delButtons.get(i).onClick();
+        }
+
+        for (DoneButton e : TaskContainer.doneButtons){
+            try {
+                e.onClick();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
         }
     }
 
@@ -264,10 +276,9 @@ public class Main extends PApplet {
     }
 
     public class TaskHolder{
-        public int taskAmount = 0;
-
         List<Task> tasks = new ArrayList<Task>();
-        List<DeleteButton> dButtons = new ArrayList<DeleteButton>();
+        List<DeleteButton> delButtons = new ArrayList<DeleteButton>();
+        List<DoneButton> doneButtons = new ArrayList<DoneButton>();
 
         public int textMargin = 4;
 
@@ -287,9 +298,9 @@ public class Main extends PApplet {
                    return false;
                }
             }
-            taskAmount++;
             tasks.add(newTask);
-            dButtons.add(new DeleteButton(newTask.id));
+            delButtons.add(new DeleteButton(newTask.id));
+            doneButtons.add(new DoneButton(newTask.id));
 
             return true;
         }
@@ -310,12 +321,12 @@ public class Main extends PApplet {
 
             int i = 0;
             for(Task task : tasks){
-                this.t_draw(i, displayFont, textMargin, task, dButtons.get(i), 5, 3,bg_color);
+                this.t_draw(i, displayFont, textMargin, task, delButtons.get(i), doneButtons.get(i), 5, 3,bg_color);
                 i++;
             }
         }
 
-        void t_draw(int taskNumber, PFont font, int textMargin, Task task, DeleteButton deleteButton,
+        void t_draw(int taskNumber, PFont font, int textMargin, Task task, DeleteButton deleteButton, DoneButton doneButton,
                     int marginToParent, int yMargin, int bg_color){
             fill(bg_color);
             taskX = this.xPosition + marginToParent;
@@ -325,10 +336,13 @@ public class Main extends PApplet {
 
             }
 
-            deleteButton.s_draw(taskY, taskX + r_width - marginToParent *2 - deleteButton.r_width, textHeight + textMargin * 2,
-                    textHeight + textMargin * 2);
+            deleteButton.s_draw(taskY, taskX + r_width - marginToParent *2 - deleteButton.r_width,
+                    textHeight + textMargin * 2,textHeight + textMargin * 2);
 
-            rect(taskX, taskY, r_width - marginToParent *2 - deleteButton.r_width, textHeight + textMargin * 2);
+            doneButton.s_draw(taskY, taskX + r_width - marginToParent *2 - deleteButton.r_width - doneButton.r_width,
+                    textHeight + textMargin * 2,textHeight + textMargin * 2);
+
+            rect(taskX, taskY, r_width - marginToParent *2 - deleteButton.r_width - doneButton.r_width, textHeight + textMargin * 2);
 
             fill(255);
             textFont(font);
@@ -359,7 +373,7 @@ public class Main extends PApplet {
             }
         }
 
-        public void onClick() {}
+        public void onClick() throws IOException, InterruptedException {}
 
     }
 
@@ -399,7 +413,40 @@ public class Main extends PApplet {
                     e.printStackTrace();
                 }
             }
+        }
+    }
 
+    class DoneButton extends Button{
+        public int parentTaskID;
+
+        public DoneButton(int id){
+            this.parentTaskID = id;
+        }
+
+        public void s_draw(int yp, int xp, int rw, int rh) {
+            this.yPosition = yp;
+            this.xPosition = xp;
+            this.r_width = rw;
+            this.r_height = rh;
+
+            super.s_draw();
+
+            if(TaskContainer.tasks.get(parentTaskID).done) {
+                stroke(0, 255, 0);
+                line(this.xPosition + (int)this.r_width/4, this.yPosition + (int) this.r_height/2,
+                        this.xPosition + (int)this.r_width/3, this.yPosition + this.r_width - (int)this.r_height/5);
+                line(this.xPosition + (int)this.r_width/3, this.yPosition + this.r_width - (int)this.r_height/5,
+                        this.xPosition + this.r_width - (int)this.r_width/5, this.yPosition + (int)this.r_height/5);
+                stroke(0);
+            }
+        }
+
+        public void onClick() throws IOException, InterruptedException {
+            if (mouseX > this.xPosition && mouseX < this.xPosition + this.r_width && mouseY > this.yPosition &&
+                    mouseY < this.yPosition + this.r_height){
+            changeTaskDone(TaskContainer.tasks.get(parentTaskID));
+
+            }
         }
     }
 }
