@@ -77,7 +77,6 @@ class Task(Resource): # task resource
             abort(404, message="there is no task with that id")
         
         
-        updateIDs()
         db.session.delete(result)
         db.session.commit()
         updateIDs()
@@ -88,15 +87,17 @@ class Task(Resource): # task resource
 class TaskAmount(Resource): # info about the total amount of tasks in the database
     def get(self):
         rows = TaskModel.query.count()
-        print (rows)
         return rows
 
 def updateIDs():
     for i in range(TaskModel.query.count()):
-        print(i)
         task = TaskModel.query.get(i+1)
-        task.id = i
-        
+        if task is not None:
+            print(task)
+            new_task = TaskModel(id=i, name=task.name, done=task.done)
+            db.session.add(new_task)
+            db.session.delete(task)
+            db.session.commit()
         
         
 
