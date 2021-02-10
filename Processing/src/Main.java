@@ -138,6 +138,8 @@ public class Main extends PApplet {
         displayFont = createFont("Arial", 15);
         fill(fillColor);
         frameRate(60);
+        surface.setResizable(false);
+        surface.setTitle("Jannes Döge - Programmierprojekt");
     }
 
     @Override
@@ -164,6 +166,7 @@ public class Main extends PApplet {
     @Override
     public void settings() {
         size(500, 500);
+
     }
 
     @Override
@@ -332,23 +335,41 @@ public class Main extends PApplet {
             taskX = this.xPosition + marginToParent;
             taskY = this.yPosition + yMargin + ((textHeight + textMargin) * 2) * taskNumber;
 
-            if(taskY > r_height){
+            System.out.println(taskNumber);
+            System.out.println(taskY);
+            System.out.println(this.r_height);
+
+            boolean drawable = this.taskY - this.yPosition < this.r_height;
+
+            if(drawable){
+                deleteButton.s_draw(taskY, taskX + r_width - marginToParent *2 - deleteButton.r_width,
+                        textHeight + textMargin * 2,textHeight + textMargin * 2, drawable);
+
+                doneButton.s_draw(taskY, taskX + r_width - marginToParent *2 - deleteButton.r_width - doneButton.r_width,
+                        textHeight + textMargin * 2,textHeight + textMargin * 2, drawable);
+
+                rect(taskX, taskY, r_width - marginToParent *2 - deleteButton.r_width - doneButton.r_width, textHeight + textMargin * 2);
+
+                fill(255);
+                textFont(font);
+                text(task.name, taskX + textMargin, taskY + textHeight + yMargin);
+                fill(fillColor);
+            }else {
+                rect(this.xPosition + (int)this.r_width/2 - (int)this.r_width/6, this.yPosition + this.r_height - (textHeight + textMargin * 2)/2,
+                        (int)this.r_width/3, (textHeight + textMargin * 2), 10);
+
+                noStroke();
+                fill(255);
+                ellipse(this.xPosition + (int)this.r_width/2, this.yPosition + this.r_height,(int)height/50, (int)height/50);
+                ellipse(this.xPosition + (int)this.r_width/2 + (int)this.r_width/16, this.yPosition + this.r_height,(int)height/50, (int)height/50);
+                ellipse(this.xPosition + (int)this.r_width/2 - (int)this.r_width/16, this.yPosition + this.r_height,(int)height/50, (int)height/50);
+                stroke(0);
+                fill(fillColor);
 
             }
+            }
 
-            deleteButton.s_draw(taskY, taskX + r_width - marginToParent *2 - deleteButton.r_width,
-                    textHeight + textMargin * 2,textHeight + textMargin * 2);
 
-            doneButton.s_draw(taskY, taskX + r_width - marginToParent *2 - deleteButton.r_width - doneButton.r_width,
-                    textHeight + textMargin * 2,textHeight + textMargin * 2);
-
-            rect(taskX, taskY, r_width - marginToParent *2 - deleteButton.r_width - doneButton.r_width, textHeight + textMargin * 2);
-
-            fill(255);
-            textFont(font);
-            text(task.name, taskX + textMargin, taskY + textHeight + yMargin);
-            fill(fillColor);
-        }
 
         void s_updateTasks() throws IOException, InterruptedException {
             for (int i = 0; i < amount_request(); i++){
@@ -384,21 +405,25 @@ public class Main extends PApplet {
             this.parentTaskID = id;
         }
 
-        public void s_draw(int yp, int xp, int rw, int rh) {
+        public void s_draw(int yp, int xp, int rw, int rh, boolean draw) {
             this.yPosition = yp;
             this.xPosition = xp;
             this.r_width = rw;
             this.r_height = rh;
 
-            super.s_draw();
+            if (draw){
+                super.s_draw();
 
-            stroke(255, 0, 0);
-            line(xPosition + (int) r_width/5, yPosition + (int) r_height/5, xPosition + r_width - (int) r_width/5,
-                    yPosition + r_height - (int) r_height/5);
+                stroke(255, 0, 0);
+                line(xPosition + (int) r_width/5, yPosition + (int) r_height/5, xPosition + r_width - (int) r_width/5,
+                        yPosition + r_height - (int) r_height/5);
 
-            line(xPosition + (int) r_width/5, yPosition + r_height - (int) r_height/5, xPosition + r_width - (int) r_width/5,
-                    yPosition + (int) r_height/5);
-            stroke(0);
+                line(xPosition + (int) r_width/5, yPosition + r_height - (int) r_height/5, xPosition + r_width - (int) r_width/5,
+                        yPosition + (int) r_height/5);
+                stroke(0);
+            }
+
+
         }
 
         @Override
@@ -423,22 +448,26 @@ public class Main extends PApplet {
             this.parentTaskID = id;
         }
 
-        public void s_draw(int yp, int xp, int rw, int rh) {
+        public void s_draw(int yp, int xp, int rw, int rh, boolean draw) {
             this.yPosition = yp;
             this.xPosition = xp;
             this.r_width = rw;
             this.r_height = rh;
 
-            super.s_draw();
+            if(draw){
+                super.s_draw();
 
-            if(TaskContainer.tasks.get(parentTaskID).done) {
-                stroke(0, 255, 0);
-                line(this.xPosition + (int)this.r_width/4, this.yPosition + (int) this.r_height/2,
-                        this.xPosition + (int)this.r_width/3, this.yPosition + this.r_width - (int)this.r_height/5);
-                line(this.xPosition + (int)this.r_width/3, this.yPosition + this.r_width - (int)this.r_height/5,
-                        this.xPosition + this.r_width - (int)this.r_width/5, this.yPosition + (int)this.r_height/5);
-                stroke(0);
+                if(TaskContainer.tasks.get(parentTaskID).done) {
+                    stroke(0, 255, 0);
+                    line(this.xPosition + (int)this.r_width/4, this.yPosition + (int) this.r_height/2,
+                            this.xPosition + (int)this.r_width/3, this.yPosition + this.r_width - (int)this.r_height/5);
+                    line(this.xPosition + (int)this.r_width/3, this.yPosition + this.r_width - (int)this.r_height/5,
+                            this.xPosition + this.r_width - (int)this.r_width/5, this.yPosition + (int)this.r_height/5);
+                    stroke(0);
+                }
             }
+
+
         }
 
         public void onClick() throws IOException, InterruptedException {
