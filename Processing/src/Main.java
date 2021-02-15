@@ -20,27 +20,34 @@ public class Main extends PApplet {
     }
 
     HttpClient client = HttpClient.newHttpClient();
-    private static final String BASE_URL = "http://127.0.0.1:5000/";
+    private static final String BASE_URL = "http://127.0.0.1:5000/"; //base url für alle API calls
 
-    public static String remove_last_char(String str){
+    public static String remove_last_char(String str){ //funktion um den letzten Char eines Strings zu entfernen
         if (str.length() > 0){
             return str.substring(0, str.length() -1);
         }
         return "";
     }
 
+    // Request um die Informationen über eine bestimmte Aufgabe zu erhalten
     public HttpResponse<String> taskInfoRequest(int taskID) throws IOException, InterruptedException {
+
+        //Request erstellen
         HttpRequest taskInfoRequest = HttpRequest.newBuilder()
                 .GET()
                 .header("accept", "application/json")
                 .uri(URI.create(BASE_URL + "/task/" + taskID))
                 .build();
+
+        //Request senden und Antworten speichern
         HttpResponse<String> response = client.send(taskInfoRequest, HttpResponse.BodyHandlers.ofString());
         return response;
     }
 
+    //Mit dieser Request wird eine neue Aufgabe erstellt
     public HttpResponse<String> taskPostRequest(String taskName) throws IOException, InterruptedException {
         int id = amount_request();
+
         Map mapData = new HashMap<>() {
 
             {
@@ -48,6 +55,7 @@ public class Main extends PApplet {
             }
         };
 
+        //daten in json umwandeln
         ObjectMapper mapper = new ObjectMapper();
         String data = mapper.writeValueAsString(mapData);
 
@@ -61,6 +69,7 @@ public class Main extends PApplet {
         return response;
     }
 
+    //Mit dieser Funktion kann eine Aufgabe als erledigt oder nicht erledigt markiert werden
     public HttpResponse<String> changeTaskDone(Task task) throws IOException, InterruptedException {
         task.done = !task.done;
 
@@ -80,6 +89,7 @@ public class Main extends PApplet {
         return response;
     }
 
+    //Mit dieser Funktion kann eine Aufgabe aus der Datenbank gelöscht werden
     public HttpResponse<String> deleteTask(int taskID) throws IOException, InterruptedException {
         TaskContainer.tasks.remove(taskID);
         TaskContainer.delButtons.remove(taskID);
@@ -102,7 +112,7 @@ public class Main extends PApplet {
         return response;
     }
 
-
+    //Diese Funktion gibt die Anzahl der in der Datenbank vorhandenen Einträge wieder
     public int amount_request() throws IOException, InterruptedException {
         HttpRequest amountRequest = HttpRequest.newBuilder()
                 .GET()
@@ -116,12 +126,13 @@ public class Main extends PApplet {
     Textinput Input = new Textinput(){
         @Override
         public void onEnter() throws IOException, InterruptedException {
+            //Sobald die Enter-Taste gedrückt wird, wird eine neue Aufgabe der Datenbank hinzugefügt, bei welcher der
+            //Name dem Inhalt des Textfeldes entspricht
             taskPostRequest(this.typed);
             this.typed = "";
             this.text = "";
         }
     };
-
 
     TaskHolder TaskContainer = new TaskHolder();
 
@@ -145,6 +156,7 @@ public class Main extends PApplet {
     @Override
     public void draw(){
         background(60);
+        //zeichnen des Input-Feldes
         Input.s_draw((int) Math.round(width/10), (int) Math.round(height/12.5), inputFont, (int) Math.round(width*0.6), backgroundColor, "Name");
         try {
             TaskContainer.s_draw(50, 80, displayFont, width -50 * 2, height -80 * 2, backgroundColor);
@@ -153,15 +165,7 @@ public class Main extends PApplet {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        try {
-            amount_request();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
+      }
 
     @Override
     public void settings() {
@@ -214,7 +218,8 @@ public class Main extends PApplet {
         float t_width = 0;
         float r_width;
 
-
+        //diese Funktion überprüft, ob es sich bei der gedrückten Taste um eine Taste handelt, die dem text-String
+        //hinzugefügt werden kann und ob genügend Platz vorhanden ist
         private boolean validKeyPress(char k){
             return Character.toString(k).matches("[A-z?, ]") && t_width < r_width - textWidth(k) - textMargin;
         }
@@ -232,14 +237,12 @@ public class Main extends PApplet {
             this.yPosition = y;
             this.xPosition = x;
 
-
             fill(bg_color);
             rect(x - textMargin, y - f_size, r_width, f_size + f_size/3, 5);
             fill(fillColor);
 
             t_width = textWidth(text);
             text(text, x, y);
-
 
 
             if (active){
@@ -264,6 +267,7 @@ public class Main extends PApplet {
             }
         }
 
+        //Diese Methode kann individuell für jedes Objekt der Klasse festgelegt werden
         public void onEnter() throws IOException, InterruptedException {}
 
         public void click_check(int mx, int my){
@@ -295,6 +299,8 @@ public class Main extends PApplet {
         int taskX;
         int taskY;
 
+        //Diese Funktion nimmt eine neue Aufgabe als Parameter und es wird geprüft, ob diese bereits in der Liste der
+        //Aufgaben vorhanden ist; ist sie noch nicht vorhanden wird sie der Liste hinzugefügt
         public boolean addTask(Task newTask){
             for(Task task : tasks){
                if(task.id == newTask.id){
@@ -311,6 +317,7 @@ public class Main extends PApplet {
         void s_draw(int x, int y, PFont f, int rect_width, int rect_height, int bg_color) throws IOException, InterruptedException {
             xPosition = x;
             yPosition = y;
+            //das r steht für rect
             r_width = rect_width;
             r_height = rect_height;
 
@@ -339,6 +346,7 @@ public class Main extends PApplet {
             System.out.println(taskY);
             System.out.println(this.r_height);
 
+            //dieser Boolean gibt an, ob genügend Platz ist um die Aufgabe zu zeichnen
             boolean drawable = this.taskY - this.yPosition < this.r_height;
 
             if(drawable){
@@ -355,6 +363,8 @@ public class Main extends PApplet {
                 text(task.name, taskX + textMargin, taskY + textHeight + yMargin);
                 fill(fillColor);
             }else {
+                //Wenn nicht genügend Platz ist, wird ein Symbol gezeichnet, was anzeigt, dass noch mehr Aufgaben da sind,
+                //welche jedoch nicht direkt zu sehen sind
                 rect(this.xPosition + (int)this.r_width/2 - (int)this.r_width/6, this.yPosition + this.r_height - (textHeight + textMargin * 2)/2,
                         (int)this.r_width/3, (textHeight + textMargin * 2), 10);
 
@@ -368,7 +378,6 @@ public class Main extends PApplet {
 
             }
             }
-
 
 
         void s_updateTasks() throws IOException, InterruptedException {

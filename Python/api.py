@@ -33,6 +33,7 @@ resource_fields = {
 
 
 class Task(Resource): # task resource
+    # return the properties of a specified entry
     @marshal_with(resource_fields) # serialize object
     def get(self, task_id):
 
@@ -41,6 +42,7 @@ class Task(Resource): # task resource
             abort(404, message="There is no task associated with that id - try a different one")
         return result
     
+    # create a new entry
     @marshal_with(resource_fields)
     def post(self, task_id):
         args = task_put_args.parse_args() # get acces to the arguments
@@ -53,6 +55,7 @@ class Task(Resource): # task resource
         db.session.commit()
         return task, 201
     
+    # update an existing entry
     @marshal_with(resource_fields)
     def patch(self, task_id):
         args = task_update_args.parse_args()
@@ -69,7 +72,7 @@ class Task(Resource): # task resource
 
         return result
 
-
+    # delete an existing entry
     @marshal_with(resource_fields)
     def delete(self, task_id):
         result = TaskModel.query.filter_by(id=task_id).first()
@@ -89,6 +92,7 @@ class TaskAmount(Resource): # info about the total amount of tasks in the databa
         rows = TaskModel.query.count()
         return rows
 
+# update all of the ids to ensure that they stay in order
 def updateIDs():
     for i in range(TaskModel.query.count()):
         task = TaskModel.query.get(i+1)
@@ -100,8 +104,8 @@ def updateIDs():
             db.session.commit()
         
         
-
-api.add_resource(Task, "/task/<int:task_id>") # add resource to the api
+# add resources to the api
+api.add_resource(Task, "/task/<int:task_id>") 
 api.add_resource(TaskAmount, "/amount")
 
 if __name__ == "__main__": 
